@@ -1,0 +1,24 @@
+﻿@model SuggestionBox.Models.LoginViewModel
+<html>
+    <body width="100%">
+        <div style="text-align:right; margin-top: 20px">
+            <button class="log" onclick="window.location.href='/home/Suggestion'">Suggestion</button>
+        </div>
+        <div class="center-align">
+            <div class="container">
+                <div class="heading">
+                    <img src="~/image/loginbanner.png" />
+                </div>
+                <form asp-action="Login" class="form">
+                    <input required="" class="input" type="email" name="Email" id="Email" placeholder="E-mail">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <input required="" class="input" type="password" name="Password" id="Password" placeholder="Password">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input class="login-button" type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
