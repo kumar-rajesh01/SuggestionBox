@@ -103,8 +103,8 @@ namespace SuggestionBox.Service
                 var suggestion = _dbContext.Suggestions.FirstOrDefault(x => x.SuggestionId == model.Id);
                 if(suggestion != null)
                 {
-                    suggestion.IsReviewed = string.IsNullOrEmpty(model.Comment) && model.IsResolved.HasValue && !suggestion.IsReviewed ? model.IsResolved.Value : suggestion.IsReviewed;
-                    suggestion.Comment = model.IsResolved == null && !string.IsNullOrEmpty(model.Comment) && string.IsNullOrEmpty(suggestion.Comment) ? GCrypter.Encrypt(model.Comment) : suggestion.Comment;
+                    suggestion.IsReviewed = model.IsResolved.HasValue && !suggestion.IsReviewed ? model.IsResolved.Value : suggestion.IsReviewed;
+                    suggestion.Comment = !string.IsNullOrEmpty(model.Comment) && string.IsNullOrEmpty(suggestion.Comment) ? GCrypter.Encrypt(model.Comment) : suggestion.Comment;
                     suggestion.DateUpdated = DateTime.Now;
                 }
                 _dbContext.SaveChanges();

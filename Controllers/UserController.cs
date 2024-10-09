@@ -18,6 +18,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SuggestionBox.Controllers
 {
+    [CustomAuthorize]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;

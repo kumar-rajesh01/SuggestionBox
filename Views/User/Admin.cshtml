@@ -38,15 +38,33 @@
         box-shadow: rgba(133, 189, 215, 0.8784313725) 0px 30px 30px -20px;
         margin: 20px;
     }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        cursor: pointer;
+    }
 </style>
 <!-- Toastr CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
-<!--Data Table-->
-<script type="text/javascript" src=" https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src=" https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <!-- Toastr JS -->
@@ -72,9 +90,6 @@
     <table id="myTable" class="table">
         <thead>
             <tr>
-                <th width="50px">
-                    @Html.DisplayName("Id")
-                </th>
                 <th width: 900px;>
                     @Html.DisplayNameFor(model => model.Text)
                 </th>
@@ -88,7 +103,7 @@
                     @Html.DisplayName("Updated")
                 </th>
                 <th width="50px">File</th>
-                <th width="50px">Status</th>
+                <th width="50px">@Html.DisplayName("Status")</th>
                 <th width="100px">Action</th>
             </tr>
         </thead>
@@ -96,9 +111,6 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SuggestionId)
-                    </td>
                     <td>
                         @if (item.Text.Length > 140)
                         {
@@ -118,20 +130,20 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.DateUpdated)
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                         @if (item.File != null)
                         {
                             <a asp-action="DownloadFile" asp-route-id="@item.SuggestionId"><i class="fas fa-download" style="font-size: 24px;"></i></a>
                         }
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                         @if (item.IsReviewed)
                         {
-                            <i class="fas fa-check" style="font-size: 24px; color: #1d9d74;" title="Resolved"></i>
+                            <i class="fas fa-check" style="font-size: 24px; color: #1d9d74;" title="Resolved"><span style="display: none">true</span></i>
                         }
                         else
                         {
-                            <i class="far fa-clock" style="font-size: 24px; color: #ff7900;" title="Pending"></i>
+                            <i class="far fa-clock" style="font-size: 24px; color: #ff7900;" title="Pending"><span style="display: none">false</span></i>
                         }
                     </td>
                     <td style="text-align: center;">
@@ -183,13 +195,16 @@
 <script>
     $(document).ready(function () {
         $('#myTable').DataTable({
-            order: [[0, 'desc']]
+            order: [[2, 'desc']],
+            language: {
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                // Other language options can be set here
+            }
         });
     });
     var suggestionList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
 
     function opencommentDialog(type, id) {
-
         var suggestionDetail = suggestionList.find(x => x.SuggestionId == id);
 
         const dialog = document.getElementById('commentDialog');
@@ -200,7 +215,7 @@
         document.getElementById("message").style = "display: none";
         const button = document.querySelector('.login-button');
         button.style = 'display: block';
-        button.value = 'Submit'; // Change 'Submit' to 'Login'
+        button.value = 'Submit';
         document.getElementById("dialog-header").innerText = "Comment";
 
         if (type == "comment") {
@@ -214,6 +229,9 @@
             document.getElementById("isResolved").value = true;
             document.getElementById("isResolved").checked = true;
             document.getElementById("message").style = "display: block";
+            if (!suggestionDetail.Comment) {
+                document.getElementById("comment-box").style = "display: block";
+            }
             document.getElementById("message").innerText = "Are you sure you want to resolve the suggestion?";
             button.value = 'Yes';
         }

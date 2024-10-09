@@ -1,7 +1,10 @@
-﻿namespace SuggestionBox.Helper
+﻿using log4net;
+
+namespace SuggestionBox.Helper
 {
     public static class CommonHelper
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(CommonHelper));
         public static string GetRequestIP(this IHttpContextAccessor httpContextAccessor)
         {
             string ip;

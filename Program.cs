@@ -2,9 +2,9 @@ using GCrypt;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SuggestionBox.Data;
+using SuggestionBox.Helper;
 using SuggestionBox.Interface;
 using SuggestionBox.Service;
-using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 
@@ -12,11 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 log4net.Config.XmlConfigurator.Configure(new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config")));
 log4net.ILog _logger = log4net.LogManager.GetLogger(typeof(Program));
 
+var key = CredentialManager.ValidateCredential();
+
 AppDomain.CurrentDomain.FirstChanceException += CatchAllExceptions; 
 GCryptBuilder.Create()
 .AddTripleDES(a =>
 {
-    a.Key = "Suggestion_Box$_*_*_2024_IAK";
+    //a.Key = "Suggestion_Box$_*_*_2024_IAK";
+    a.Key = key;
     a.Mode = CipherMode.ECB;
     a.Padding = PaddingMode.PKCS7;
 })
@@ -29,7 +32,6 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
 {
     o.LoginPath = new PathString("/home/Suggestion");
@@ -44,11 +46,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/User/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

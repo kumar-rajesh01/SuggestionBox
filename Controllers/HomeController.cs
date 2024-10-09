@@ -19,12 +19,14 @@ namespace SuggestionBox.Controllers
             _logger = logger;
         }
 
+        [CustomAuthorize]
         public IActionResult Suggestion()
         {
             log.Info("Index page is called.");
             return View();
         }
 
+        [CustomAuthorize]
         [HttpPost]
         public async Task<IActionResult> Suggestion([FromServices] IUserService userService, SuggestionModel suggestion)
         {
@@ -61,6 +63,7 @@ namespace SuggestionBox.Controllers
             return View();
         }
 
+        [CustomAuthorize]
         public IActionResult Encrypt(string input)
         {
             return new ContentResult
@@ -74,6 +77,11 @@ namespace SuggestionBox.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Unauthorized()
+        {
+            return View();
         }
     }
 }
